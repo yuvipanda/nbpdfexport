@@ -28,7 +28,6 @@ def notebook_to_pdf(notebook_path, pdf_path):
     Convert given notebook file to PDF
     """
     exporter = nbconvert.HTMLExporter(config={})
-    exporter.exclude_input_prompt = True
     exported_html, _ = exporter.from_filename(notebook_path)
 
     with tempfile.NamedTemporaryFile(suffix='.html') as f:
