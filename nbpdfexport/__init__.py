@@ -6,6 +6,7 @@ I can never figure out nbconvert's API, unfortunately.
 """
 import argparse
 import nbconvert
+import nbformat
 import tempfile
 import asyncio
 import tempfile
@@ -16,24 +17,24 @@ async def html_to_pdf(html_file, pdf_file):
     """
     Convert arbitrary HTML file to PDF
     """
-    browser = await launch()
+    browser = await launch(args=['--no-sandbox'])
     page = await browser.newPage()
     await page.goto(f'file:///{html_file}')
     await page.pdf({'path': pdf_file})
     await browser.close()
 
 
-def notebook_to_pdf(notebook_path, pdf_path):
+async def notebook_to_pdf(notebook_model, pdf_path):
     """
-    Convert given notebook file to PDF
+    Convert given notebook model to PDF
     """
     exporter = nbconvert.HTMLExporter(config={})
-    exported_html, _ = exporter.from_filename(notebook_path)
+    exported_html, _ = exporter.from_notebook_node(notebook_model)
 
     with tempfile.NamedTemporaryFile(suffix='.html') as f:
         f.write(exported_html.encode())
         f.flush()
-        asyncio.get_event_loop().run_until_complete(html_to_pdf(f.name, pdf_path))
+        await html_to_pdf(f.name, pdf_path)
 
 def main():
     argparser = argparse.ArgumentParser()
@@ -48,7 +49,9 @@ def main():
 
     args = argparser.parse_args()
 
-    notebook_to_pdf(args.notebook_path, args.pdf_path)
+    with open(args.notebook_path) as f:
+        notebook_model = nbformat.read(f, as_version=4)
+    asyncio.get_event_loop().run_until_complete(notebook_to_pdf(notebook_model, args.pdf_path))
 
 if __name__ == '__main__':
     main()
