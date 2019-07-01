@@ -1,4 +1,5 @@
 libx11-xcb1
+libxtst6
 libxrandr2
 libasound2
 libpangocairo-1.0-0
