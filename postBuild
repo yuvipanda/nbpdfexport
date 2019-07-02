@@ -4,3 +4,6 @@ set -euo pipefail
 
 # Download headless chrome at install time
 pyppeteer-install
+
+# Set up bundler
+jupyter bundlerextension enable nbpdfexport.bundler --sys-prefix --py
