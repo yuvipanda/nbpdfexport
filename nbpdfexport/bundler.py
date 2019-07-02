@@ -18,6 +18,10 @@ async def bundle(handler, model):
         # FIXME: Optimize this streaming somehow?
         handler.set_header('Content-Type', 'application/pdf')
         handler.set_header('Content-Length', os.path.getsize(pdf_path))
+        # Mark this as a 'download' action
+        download_filename = os.path.splitext(model['name'])[0] + '.pdf'
+        handler.set_header('Content-Disposition', 'attachment; filename={}'.format(download_filename))
+
         with open(pdf_path, mode='rb') as f:
             handler.write(f.read())
         handler.finish()
