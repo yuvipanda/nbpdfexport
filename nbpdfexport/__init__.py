@@ -21,7 +21,15 @@ async def html_to_pdf(html_file, pdf_file):
     page = await browser.newPage()
     # Waiting for networkidle0 seems to let mathjax render
     await page.goto(f'file:///{html_file}', {'waitUntil': ['networkidle0']})
-    await page.pdf({'path': pdf_file})
+    # Give it *some* margins to make it look a little prettier
+    # I just made these up
+    page_margins = {
+        'left': '0.4in',
+        'right': '0.4in',
+        'top': '0.4in',
+        'bottom': '0.4in'
+    }
+    await page.pdf({'path': pdf_file, 'margin': page_margins})
     await browser.close()
 
 
