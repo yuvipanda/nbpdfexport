@@ -19,7 +19,8 @@ async def html_to_pdf(html_file, pdf_file):
     """
     browser = await launch(args=['--no-sandbox'])
     page = await browser.newPage()
-    await page.goto(f'file:///{html_file}')
+    # Waiting for networkidle0 seems to let mathjax render
+    await page.goto(f'file:///{html_file}', {'waitUntil': ['networkidle0']})
     await page.pdf({'path': pdf_file})
     await browser.close()
 
